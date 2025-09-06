@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
 
-#comments are important, it labels the functions :)
+#comments are important, it labels the functions :) PLEASE study everything
 class ProductionCostingSystem:
     def __init__(self):
         self.root = tk.Tk()
@@ -233,4 +233,5 @@ class ProductionCostingSystem:
 if __name__ == "__main__":
     app = ProductionCostingSystem()
     app.run()
+
 
