@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
 
+#comments are important, it labels the functions :)
 class ProductionCostingSystem:
     def __init__(self):
         self.root = tk.Tk()
@@ -13,7 +14,7 @@ class ProductionCostingSystem:
         self.create_main_interface()
     
     def create_main_interface(self):
-        """Create the main GUI interface with buttons and labels"""
+#Create the main GUI interface with buttons and labels
         title_label = tk.Label(self.root, text="Production Costing System", 
                               font=("Arial", 16, "bold"))
         title_label.pack(pady=10)
@@ -43,7 +44,7 @@ class ProductionCostingSystem:
     
     
     def add_cost_center_window(self):
-        """Open a window to add a new cost center"""
+#Open a window to add a new cost center
         window = tk.Toplevel(self.root)
         window.title("Add Cost Center")
         window.geometry("300x150")
@@ -57,7 +58,7 @@ class ProductionCostingSystem:
         name_entry.pack(pady=5)
         
         def save_cost_center():
-            """Save the new cost center"""
+#Save the new cost center
             cost_center_id = id_entry.get().strip()
             cost_center_name = name_entry.get().strip()
             
@@ -77,7 +78,7 @@ class ProductionCostingSystem:
         save_btn.pack(pady=10)
     
     def create_order_window(self):
-        """Open a window to create a new production order"""
+#Open a window to create a new production order
         window = tk.Toplevel(self.root)
         window.title("Create Production Order")
         window.geometry("300x250")
@@ -95,7 +96,7 @@ class ProductionCostingSystem:
         cost_entry.pack(pady=5)
         
         def save_order():
-            """Save the new production order"""
+#Save the new production order
             order_id = id_entry.get().strip()
             product_name = product_entry.get().strip()
             planned_cost = cost_entry.get().strip()
@@ -145,7 +146,7 @@ class ProductionCostingSystem:
         cost_entry.pack(pady=5)
         
         def save_actual_cost():
-            """Save the actual cost for the selected order"""
+#Save the actual cost for the selected order
             selected_order = order_var.get()
             actual_cost = cost_entry.get().strip()
             
@@ -226,9 +227,10 @@ class ProductionCostingSystem:
         close_btn.pack(pady=10)
     
     def run(self):
-        """Start the application"""
+#Start the application
         self.root.mainloop()
 
 if __name__ == "__main__":
     app = ProductionCostingSystem()
     app.run()
+
