@@ -83,21 +83,224 @@ class ProductionCostingSystem:
         self.clear_content()
         tk.Label(self.content_frame, text="Cost Center", 
                  font=("Arial", 20), bg="white").pack(pady=10, anchor="w", padx=20)
+        
+        cost_center_container = tk.Frame(self.content_frame, bg="#374050")
+        cost_center_container.pack(fill="both", expand=True, padx=20, pady=10)
+
+        add_cost_center_frame = tk.Frame(cost_center_container, bg="white", bd=2, relief="groove", padx=10, pady=10)
+        add_cost_center_frame.grid(row=0, column=0, sticky="n", padx=10, pady=10)
+
+        tk.Label(add_cost_center_frame, text="Add Cost Center", 
+                font=("Arial", 14, "bold"), bg="white", fg="#374050").pack(pady=(0,10))
+        tk.Label(add_cost_center_frame, text="Cost Center ID:", bg="white", fg="#374050", anchor="w").pack(fill="x")
+        id_entry = tk.Entry(add_cost_center_frame, width=30)
+        id_entry.pack(pady=5, fill="x")
+
+        tk.Label(add_cost_center_frame, text="Name:", bg="white", fg="#374050", anchor="w").pack(fill="x")
+        name_entry = tk.Entry(add_cost_center_frame, width=30)
+        name_entry.pack(pady=5, fill="x")
+
+        tk.Label(add_cost_center_frame, text="Description (Optional):", bg="white", fg="#374050", anchor="w").pack(fill="x")
+        desc_entry = tk.Entry(add_cost_center_frame, width=30)
+        desc_entry.pack(pady=5, fill="x")
+
+        def save_cost_center():
+#Save the new cost center
+            cost_center_id = id_entry.get().strip()
+            cost_center_name = name_entry.get().strip()
+            
+            if not cost_center_id or not cost_center_name:
+                messagebox.showerror("Error", "Please fill in all fields!")
+                return
+            
+            self.cost_centers.append({
+                "id": cost_center_id,
+                "name": cost_center_name
+            })
+            
+            messagebox.showinfo("Success", "Cost Center added successfully!")
+
+        tk.Button(add_cost_center_frame, text="Save", bg="#374050", fg="white", command=save_cost_center).pack(pady=10)
+
+        list_frame = tk.Frame(cost_center_container, bg="white", bd=2, relief="groove", padx=10, pady=10)
+        list_frame.grid(row=0, column=1, sticky="n", padx=10, pady=10)
+
+        tk.Label(list_frame, text="ID   Name   Description", 
+                font=("Arial", 12, "bold"), bg="white", fg="#374050").pack(anchor="w")
 
     def show_production(self):
         self.clear_content()
         tk.Label(self.content_frame, text="Production", 
                  font=("Arial", 20), bg="white").pack(pady=10, anchor="w", padx=20)
+        
+        production_container = tk.Frame(self.content_frame, bg="#374050")
+        production_container.pack(fill="both", expand=True, padx=20, pady=10)
+
+        production_frame = tk.Frame(production_container, bg="white", bd=2, relief="groove", padx=10, pady=10)
+        production_frame.grid(row=0, column=0, sticky="n", padx=10, pady=10)
+
+        tk.Label(production_frame, text="Create Production Order", 
+                font=("Arial", 14, "bold"), bg="white", fg="#374050").pack(pady=(0,10))
+        tk.Label(production_frame, text="Cost Center ID:", bg="white", fg="#374050", anchor="w").pack(fill="x")
+        id_entry = tk.Entry(production_frame, width=30)
+        id_entry.pack(pady=5, fill="x")
+
+        tk.Label(production_frame, text="Product Name:", bg="white", fg="#374050", anchor="w").pack(fill="x")
+        product_entry = tk.Entry(production_frame, width=30)
+        product_entry.pack(pady=5, fill="x")
+
+        tk.Label(production_frame, text="Planned Cost:", bg="white", fg="#374050", anchor="w").pack(fill="x")
+        cost_entry = tk.Entry(production_frame, width=30)
+        cost_entry.pack(pady=5, fill="x")
+
+        def save_order():
+#Save the new production order
+            order_id = id_entry.get().strip()
+            product_name = product_entry.get().strip()
+            planned_cost = cost_entry.get().strip()
+            
+
+            print(f"Debug - Order ID: '{order_id}', Product: '{product_name}', Cost: '{planned_cost}'")
+            
+            if not order_id or not product_name or not planned_cost:
+                messagebox.showerror("Error", f"Please fill in all fields!\nOrder ID: '{order_id}'\nProduct: '{product_name}'\nCost: '{planned_cost}'")
+                return
+            
+            try:
+                planned_cost_float = float(planned_cost)
+            except ValueError:
+                messagebox.showerror("Error", "Planned cost must be a number!")
+                return
+            
+            self.production_orders.append({
+                "id": order_id,
+                "product_name": product_name,
+                "planned_cost": planned_cost_float,
+                "actual_cost": 0.0
+            })
+            
+            messagebox.showinfo("Success", "Production Order created successfully!")
+
+        tk.Button(production_frame, text="Save", bg="#374050", fg="white", command=save_order).pack(pady=10)
+
+        list_frame = tk.Frame(production_container, bg="white", bd=2, relief="groove", padx=10, pady=10)
+        list_frame.grid(row=0, column=1, sticky="n", padx=10, pady=10)
+
+        tk.Label(list_frame, text="ID   Name   Description", 
+                font=("Arial", 12, "bold"), bg="white", fg="#374050").pack(anchor="w")
 
     def show_actual_cost(self):
         self.clear_content()
         tk.Label(self.content_frame, text="Actual Cost", 
                  font=("Arial", 20), bg="white").pack(pady=10, anchor="w", padx=20)
+        
+        actual_cost_container = tk.Frame(self.content_frame, bg="#374050")
+        actual_cost_container.pack(fill="both", expand=True, padx=20, pady=10)
+
+        actual_cost_frame = tk.Frame(actual_cost_container, bg="white", bd=2, relief="groove", padx=10, pady=10)
+        actual_cost_frame.grid(row=0, column=0, sticky="n", padx=10, pady=10)
+
+        tk.Label(actual_cost_frame, text="Select Production Order", 
+                font=("Arial", 14, "bold"), bg="white", fg="#374050").pack(pady=(0,10))
+        tk.Label(actual_cost_frame, text="Production Order", bg="white", fg="#374050", anchor="w").pack(fill="x")
+        order_var = tk.StringVar()
+        order_combo = ttk.Combobox(actual_cost_frame, textvariable=order_var, width=27)
+
+        order_list = [f"{order['id']} - {order['product_name']}" for order in self.production_orders]
+        order_combo['values'] = order_list
+        order_combo.pack(pady=5, fill="x")
+
+        tk.Label(actual_cost_frame, text="Actual Cost", bg="white", fg="#374050", anchor="w").pack(fill="x")
+        cost_entry = tk.Entry(actual_cost_frame, width=30)
+        cost_entry.pack(pady=5, fill="x")
+
+        def save_actual_cost():
+#Save the actual cost for the selected order
+            selected_order = order_var.get()
+            actual_cost = cost_entry.get().strip()
+            
+            if not selected_order or not actual_cost:
+                messagebox.showerror("Error", "Please select an order and enter actual cost!")
+                return
+            
+            try:
+                actual_cost_float = float(actual_cost)
+            except ValueError:
+                messagebox.showerror("Error", "Actual cost must be a number!")
+                return
+            
+            order_id = selected_order.split(" - ")[0]  
+            for order in self.production_orders:
+                if order["id"] == order_id:
+                    order["actual_cost"] = actual_cost_float
+                    break
+            
+            messagebox.showinfo("Success", "Actual cost updated successfully!")
+
+        tk.Button(actual_cost_frame, text="Save", bg="#374050", fg="white", command=save_actual_cost).pack(pady=10)
+
+        list_frame = tk.Frame(actual_cost_container, bg="white", bd=2, relief="groove", padx=10, pady=10)
+        list_frame.grid(row=0, column=1, sticky="n", padx=10, pady=10)
+
+        tk.Label(list_frame, text="ID   Name   Description", 
+                font=("Arial", 12, "bold"), bg="white", fg="#374050").pack(anchor="w")
     
     def show_reports(self):
         self.clear_content()
         tk.Label(self.content_frame, text="Reports", 
                  font=("Arial", 20), bg="white").pack(pady=10, anchor="w", padx=20)
+        
+        report_container = tk.Frame(self.content_frame, bg="#374050")
+        report_container.pack(fill="both", expand=True, padx=20, pady=10)
+
+        report_frame = tk.Frame(report_container, bg="white", bd=2, relief="groove", padx=10, pady=10)
+        report_frame.grid(row=0, column=0, sticky="n", padx=10, pady=10)
+
+
+        report_text = tk.Text(report_frame, width=70, height=20)
+        report_text.pack(pady=10, padx=10, fill=tk.BOTH, expand=True)
+        
+        report_content = "PRODUCTION COSTING REPORT\n"
+        report_content += "=" * 50 + "\n\n"
+        
+        report_content += "COST CENTERS:\n"
+        report_content += "-" * 20 + "\n"
+        if self.cost_centers:
+            for cc in self.cost_centers:
+                report_content += f"ID: {cc['id']}, Name: {cc['name']}\n"
+        else:
+            report_content += "No cost centers added yet.\n"
+        
+        report_content += "\n"
+        
+        report_content += "PRODUCTION ORDERS:\n"
+        report_content += "-" * 20 + "\n"
+        if self.production_orders:
+            report_content += f"{'Order ID':<10} {'Product':<15} {'Planned':<10} {'Actual':<10} {'Variance':<10}\n"
+            report_content += "-" * 65 + "\n"
+        
+        if self.production_orders:
+            total_planned = 0
+            total_actual = 0
+            
+            for order in self.production_orders:
+                planned = order['planned_cost']
+                actual = order['actual_cost']
+                variance = actual - planned 
+                
+                total_planned += planned
+                total_actual += actual
+                
+                report_content += f"{order['id']:<10} {order['product_name']:<15} ${planned:<9.2f} ${actual:<9.2f} ${variance:<9.2f}\n"
+            
+            report_content += "-" * 65 + "\n"
+            total_variance = total_actual - total_planned
+            report_content += f"{'TOTAL':<10} {'':<15} ${total_planned:<9.2f} ${total_actual:<9.2f} ${total_variance:<9.2f}\n"
+        else:
+            report_content += "No production orders created yet.\n"
+        
+        report_text.insert(tk.END, report_content)
+        report_text.config(state=tk.DISABLED)
 
     def run(self):
 #Start the application
