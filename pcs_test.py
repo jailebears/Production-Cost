@@ -191,7 +191,7 @@ class ProductionCostingSystem:
         list_frame = tk.Frame(production_container, bg="white", bd=2, relief="groove", padx=10, pady=10)
         list_frame.grid(row=1, column=1, sticky="n", padx=10, pady=10)
 
-        tk.Label(list_frame, text="ID   Name   Description", 
+        tk.Label(list_frame, text="ID   Name   Planned Cost", 
                 font=("Arial", 12, "bold"), bg="white", fg="#374050").pack(anchor="w")
 
     def show_actual_cost(self):
