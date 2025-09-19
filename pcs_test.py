@@ -183,8 +183,13 @@ class ProductionCostingSystem:
 
         tk.Button(production_frame, text="Save", bg="#374050", fg="white", command=save_order).pack(pady=10)
 
+        search_frame = tk.Frame(production_container, bg="white", bd=2, relief="groove", padx=10, pady=10)
+        search_frame.grid(row=0, column=1, sticky="n", padx=10, pady=10)
+        tk.Label(search_frame, text="Search",
+                 font=("Arial", 12, "bold"), bg="white", fg="#374050").pack(pady=(0,10))
+
         list_frame = tk.Frame(production_container, bg="white", bd=2, relief="groove", padx=10, pady=10)
-        list_frame.grid(row=0, column=1, sticky="n", padx=10, pady=10)
+        list_frame.grid(row=1, column=1, sticky="n", padx=10, pady=10)
 
         tk.Label(list_frame, text="ID   Name   Description", 
                 font=("Arial", 12, "bold"), bg="white", fg="#374050").pack(anchor="w")
@@ -239,10 +244,15 @@ class ProductionCostingSystem:
 
         tk.Button(actual_cost_frame, text="Save", bg="#374050", fg="white", command=save_actual_cost).pack(pady=10)
 
-        list_frame = tk.Frame(actual_cost_container, bg="white", bd=2, relief="groove", padx=10, pady=10)
-        list_frame.grid(row=0, column=1, sticky="n", padx=10, pady=10)
+        search_frame = tk.Frame(actual_cost_container, bg="white", bd=2, relief="groove", padx=10, pady=10)
+        search_frame.grid(row=0, column=1, sticky="n", padx=10, pady=10)
+        tk.Label(search_frame, text="Search",
+                 font=("Arial", 12, "bold"), bg="white", fg="#374050").pack(pady=(0,10))
 
-        tk.Label(list_frame, text="ID   Name   Description", 
+        list_frame = tk.Frame(actual_cost_container, bg="white", bd=2, relief="groove", padx=10, pady=10)
+        list_frame.grid(row=1, column=1, sticky="n", padx=10, pady=10)
+
+        tk.Label(list_frame, text="Production Order    Actual Cost", 
                 font=("Arial", 12, "bold"), bg="white", fg="#374050").pack(anchor="w")
     
     def show_reports(self):
@@ -256,6 +266,21 @@ class ProductionCostingSystem:
         report_frame = tk.Frame(report_container, bg="white", bd=2, relief="groove", padx=10, pady=10)
         report_frame.grid(row=0, column=0, sticky="n", padx=10, pady=10)
 
+        tk.Label(report_frame, text="Costing Report", 
+                font=("Arial", 14, "bold"), bg="white", fg="#374050").pack(pady=(0,10))
+        tk.Label(report_frame, text="Production Order", bg="white", fg="#374050", anchor="w").pack(fill="x")
+        order_var = tk.StringVar()
+        order_combo = ttk.Combobox(report_frame, textvariable=order_var, width=27)
+
+        order_list = [f"{order['id']} - {order['product_name']}" for order in self.production_orders]
+        order_combo['values'] = order_list
+        order_combo.pack(pady=5, fill="x")
+
+        list_frame = tk.Frame(report_container, bg="white", bd=2, relief="groove", padx=10, pady=10)
+        list_frame.grid(row=1, column=0, sticky="n", padx=10, pady=10)
+
+        tk.Label(list_frame, text="Production Order    Planned Cost     Actual Cost     Variation", 
+                font=("Arial", 12, "bold"), bg="white", fg="#374050").pack(anchor="w")
 
         report_text = tk.Text(report_frame, width=70, height=20)
         report_text.pack(pady=10, padx=10, fill=tk.BOTH, expand=True)
