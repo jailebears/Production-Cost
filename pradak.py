@@ -85,6 +85,7 @@ class ProductionCostingSystem:
         tk.Label(header_frame, text="Costing System Pro", 
                  font=("Segoe UI", 10), bg=self.colors["accent"], fg="#e0e7ff").pack()
 
+        # Navigation buttons container
         nav_frame = tk.Frame(self.sidebar, bg=self.colors["bg_sidebar"])
         nav_frame.pack(fill=tk.BOTH, expand=True, padx=16, pady=20)
 
