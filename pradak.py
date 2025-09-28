@@ -85,7 +85,6 @@ class ProductionCostingSystem:
         tk.Label(header_frame, text="Costing System Pro", 
                  font=("Segoe UI", 10), bg=self.colors["accent"], fg="#e0e7ff").pack()
 
-        # Navigation buttons container
         nav_frame = tk.Frame(self.sidebar, bg=self.colors["bg_sidebar"])
         nav_frame.pack(fill=tk.BOTH, expand=True, padx=16, pady=20)
 
@@ -556,8 +555,30 @@ class ProductionCostingSystem:
         panel = tk.Frame(self.content_frame, bg=self.colors["bg_sidebar"], bd=0)
         panel.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
 
-        left_card = tk.Frame(panel, bg=self.colors["white"], bd=1, relief="ridge")
-        left_card.pack(side=tk.LEFT, padx=12, pady=12, anchor="n")
+        left_card_container = tk.Frame(panel, bg=self.colors["bg_sidebar"])
+        left_card_container.pack(side=tk.LEFT, fill=tk.Y, padx=12, pady=12)
+
+        canvas = tk.Canvas(left_card_container, bg=self.colors["white"], height=600, width=450)
+        scrollbar = ttk.Scrollbar(left_card_container, orient="vertical", command=canvas.yview)
+        scrollable_frame = tk.Frame(canvas, bg=self.colors["white"], width=450)
+        
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+        
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+        
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+        
+        # Enable mouse wheel scrolling
+        def _on_mousewheel(event):
+            canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+        canvas.bind_all("<MouseWheel>", _on_mousewheel)
+        
+        left_card = scrollable_frame
 
         type_form = tk.Frame(left_card, bg=self.colors["white"]) 
         type_form.pack(padx=12, pady=12)
@@ -594,17 +615,17 @@ class ProductionCostingSystem:
         tk.Button(type_form, text="Add Activity Type", command=save_activity_type, width=15, bg=self.colors["accent"], fg=self.colors["white"], relief=tk.FLAT).grid(row=3, column=1, pady=10, sticky="e")
 
         types_table_frame = tk.Frame(left_card, bg=self.colors["white"])
-        types_table_frame.pack(fill=tk.BOTH, expand=True, padx=12, pady=(0,12))
+        types_table_frame.pack(fill=tk.X, padx=12, pady=(0,12))
         
         tk.Label(types_table_frame, text="Available Activity Types", bg=self.colors["white"], fg=self.colors["text_primary"], font=("Arial", 12, "bold")).pack(anchor="w", pady=(0,5))
         
         types_columns = ("name", "description")
-        self.activity_types_tree = ttk.Treeview(types_table_frame, columns=types_columns, show="headings", height=8, style="Custom.Treeview")
+        self.activity_types_tree = ttk.Treeview(types_table_frame, columns=types_columns, show="headings", height=4, style="Custom.Treeview")
         self.activity_types_tree.heading("name", text="Activity Type")
         self.activity_types_tree.heading("description", text="Description")
         self.activity_types_tree.column("name", width=150, anchor="w")
         self.activity_types_tree.column("description", width=200, anchor="w")
-        self.activity_types_tree.pack(fill=tk.BOTH, expand=True)
+        self.activity_types_tree.pack(fill=tk.X)
 
         separator = tk.Frame(left_card, bg=self.colors["bg_sidebar"], height=2)
         separator.pack(fill=tk.X, padx=12, pady=10)
@@ -683,9 +704,9 @@ class ProductionCostingSystem:
         self.activity_tree.heading("work_center", text="Work Center")
         self.activity_tree.heading("activity_type", text="Activity Type")
         self.activity_tree.heading("rate", text="Rate (Planned Cost)")
-        self.activity_tree.column("work_center", width=180, anchor="w")
-        self.activity_tree.column("activity_type", width=180, anchor="w")
-        self.activity_tree.column("rate", width=160, anchor="w")
+        self.activity_tree.column("work_center", width=120, anchor="w")
+        self.activity_tree.column("activity_type", width=140, anchor="w")
+        self.activity_tree.column("rate", width=120, anchor="w")
         self.activity_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         sb = ttk.Scrollbar(table_frame, orient="vertical", command=self.activity_tree.yview)
