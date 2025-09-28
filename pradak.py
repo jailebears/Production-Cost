@@ -5,18 +5,27 @@ from tkinter import messagebox, ttk
 class ProductionCostingSystem:
     def __init__(self):
         self.root = tk.Tk()
-        self.root.title("Basic Production Costing System")
-        self.root.geometry("1000x620")
+        self.root.title("Production Costing System")
+        self.root.geometry("1200x700")
+        self.root.minsize(1000, 600)
 
         self.colors = {
-            "bg_dark": "#1f2733",
-            "bg_sidebar": "#2b3442",
+            "bg_dark": "#0f0f23",
+            "bg_sidebar": "#1a1a2e",
             "bg_card": "#ffffff",
-            "text_primary": "#0f172a",
-            "text_secondary": "#374050",
-            "accent": "#3b82f6",
-            "accent_muted": "#eff6ff",
-            "white": "#ffffff"
+            "bg_card_hover": "#f8fafc",
+            "text_primary": "#1e293b",
+            "text_secondary": "#64748b",
+            "text_light": "#94a3b8",
+            "accent": "#6366f1",
+            "accent_hover": "#4f46e5",
+            "accent_muted": "#e0e7ff",
+            "success": "#10b981",
+            "warning": "#f59e0b",
+            "danger": "#ef4444",
+            "white": "#ffffff",
+            "border": "#e2e8f0",
+            "shadow": "#00000010"
         }
         self.root.configure(bg=self.colors["bg_dark"])
 
@@ -29,6 +38,7 @@ class ProductionCostingSystem:
         self.sales_data = {}       
         
         self.tutorial_shown = {
+            "app_start": False,
             "cost_center": False,
             "activity_types": False,
             "planned_cost": False,
@@ -45,60 +55,92 @@ class ProductionCostingSystem:
 
         self.create_main_interface()
 
+        startup_steps = [
+            {
+                "title": "Best viewed maximized",
+                "description": "This program is better maximized. Make sure to maximize your tab to fully use all the functions we offer!"
+            },
+             {
+                "title": "Read Instructions",
+                "description": "There are instructions on each tab. Make sure to read them carefully to fully understand how to use the program."
+            },
+        ]
+        self.root.after(150, lambda: self.show_tutorial("app_start", startup_steps))
+
     def clear_content(self):
         for widget in self.content_frame.winfo_children():
             widget.destroy()
     
     def create_main_interface(self):
-        self.sidebar = tk.Frame(self.root, width=220, bg=self.colors["bg_sidebar"])
+        self.sidebar = tk.Frame(self.root, width=280, bg=self.colors["bg_sidebar"], relief=tk.FLAT, bd=0)
         self.sidebar.pack(side=tk.LEFT, fill=tk.Y)
-        tk.Label(self.sidebar, text="Product\n Costing\n System", 
-                 font=("Arial", 18, "bold"), bg=self.colors["bg_sidebar"], fg="white", justify="left").pack(pady=20, padx=16, anchor="w")
+        self.sidebar.pack_propagate(False)
 
-        self.content_frame = tk.Frame(self.root, bg=self.colors["white"])
+        header_frame = tk.Frame(self.sidebar, bg=self.colors["accent"], height=80)
+        header_frame.pack(fill=tk.X, padx=0, pady=0)
+        header_frame.pack_propagate(False)
+        
+        tk.Label(header_frame, text="Production", 
+                 font=("Segoe UI", 16, "bold"), bg=self.colors["accent"], fg="white").pack(pady=(15,0))
+        tk.Label(header_frame, text="Costing System Pro", 
+                 font=("Segoe UI", 10), bg=self.colors["accent"], fg="#e0e7ff").pack()
+
+        # Navigation buttons container
+        nav_frame = tk.Frame(self.sidebar, bg=self.colors["bg_sidebar"])
+        nav_frame.pack(fill=tk.BOTH, expand=True, padx=16, pady=20)
+
+        self.content_frame = tk.Frame(self.root, bg="#f8fafc")
         self.content_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
         
         def add_side_button(key, label, command, icon=""):
+            btn_frame = tk.Frame(nav_frame, bg=self.colors["bg_sidebar"])
+            btn_frame.pack(fill=tk.X, pady=2)
+            
             btn = tk.Button(
-                self.sidebar,
+                btn_frame,
                 text=(f"{icon}  {label}" if icon else label),
-                width=20,
+                width=24,
                 height=2,
                 relief=tk.FLAT,
                 bg=self.colors["bg_sidebar"],
-                fg="#d1d5db",
-                activebackground=self.colors["bg_sidebar"],
-                activeforeground="#ffffff",
+                fg="#cbd5e1",
+                activebackground=self.colors["accent"],
+                activeforeground="white",
+                font=("Segoe UI", 10),
+                anchor="w",
                 command=lambda k=key, cmd=command: (cmd(), self._highlight_sidebar(k))
             )
-            btn.pack(pady=4, padx=8)
+            btn.pack(fill=tk.X, padx=0, pady=0)
             self.sidebar_buttons[key] = btn
 
-        add_side_button("dashboard", "Dashboard", self.show_dashboard, icon="🏠")
-        add_side_button("cost_center", "Cost Center", self.show_cost_center, icon="🏷️")
-        add_side_button("activity_types", "Activity Type", self.show_activity_types, icon="🧰")
-        add_side_button("planned_cost", "Planned Cost", self.show_planned_cost, icon="🧮")
+        add_side_button("dashboard", "Dashboard", self.show_dashboard, icon="📊")
+        add_side_button("cost_center", "Cost Centers", self.show_cost_center, icon="🏢")
+        add_side_button("activity_types", "Activity Types", self.show_activity_types, icon="⚙️")
+        add_side_button("planned_cost", "Planned Costs", self.show_planned_cost, icon="📋")
         add_side_button("production", "Production", self.show_production, icon="🏭")
-        add_side_button("actual_cost", "Actual Cost", self.show_actual_cost, icon="💰")
+        add_side_button("actual_cost", "Actual Costs", self.show_actual_cost, icon="💰")
         add_side_button("sales_data", "Sales Data", self.show_sales_data, icon="📈")
-        add_side_button("reports", "Reports", self.show_reports, icon="📊")
-        add_side_button("profitability", "Profitability", self.show_profitability, icon="💡")
+        add_side_button("reports", "Reports", self.show_reports, icon="📑")
+        add_side_button("profitability", "Profitability", self.show_profitability, icon="💎")
 
-        # footer actions
-        tk.Frame(self.sidebar, height=8, bg=self.colors["bg_sidebar"]).pack(fill=tk.X)
+        footer_frame = tk.Frame(self.sidebar, bg=self.colors["bg_sidebar"], height=60)
+        footer_frame.pack(side=tk.BOTTOM, fill=tk.X, padx=16, pady=16)
+        footer_frame.pack_propagate(False)
+        
         reset_btn = tk.Button(
-            self.sidebar,
-            text="Reset Data",
-            width=20,
+            footer_frame,
+            text="🗑️  Reset All Data",
+            width=24,
             height=2,
             relief=tk.FLAT,
-            bg=self.colors["bg_sidebar"],
-            fg="#fca5a5",
-            activebackground=self.colors["bg_sidebar"],
-            activeforeground="#fecaca",
+            bg=self.colors["danger"],
+            fg="white",
+            activebackground="#dc2626",
+            activeforeground="white",
+            font=("Segoe UI", 10, "bold"),
             command=self.reset_data
         )
-        reset_btn.pack(side=tk.BOTTOM, pady=8, padx=8)
+        reset_btn.pack(fill=tk.X, pady=8)
 
         self.show_dashboard()
         self._highlight_sidebar("dashboard")
@@ -106,9 +148,9 @@ class ProductionCostingSystem:
     def _highlight_sidebar(self, key):
         for k, btn in self.sidebar_buttons.items():
             if k == key:
-                btn.configure(bg=self.colors["accent"], fg=self.colors["white"]) 
+                btn.configure(bg=self.colors["accent"], fg="white", font=("Segoe UI", 10, "bold")) 
             else:
-                btn.configure(bg=self.colors["bg_sidebar"], fg="#d1d5db")
+                btn.configure(bg=self.colors["bg_sidebar"], fg="#cbd5e1", font=("Segoe UI", 10))
         self.active_page = key
 
     def _init_styles(self):
@@ -117,23 +159,44 @@ class ProductionCostingSystem:
             style.theme_use("clam")
         except Exception:
             pass
+
         style.configure(
             "Custom.Treeview",
-            rowheight=26,
+            rowheight=32,
             borderwidth=0,
-            relief="flat"
+            relief="flat",
+            background=self.colors["white"],
+            fieldbackground=self.colors["white"]
         )
         style.configure(
             "Custom.Treeview.Heading",
-            font=("Arial", 10, "bold"),
-            padding=(6, 6)
+            font=("Segoe UI", 11, "bold"),
+            padding=(12, 12),
+            background=self.colors["accent_muted"],
+            foreground=self.colors["text_primary"],
+            relief="flat"
         )
-        style.map("Custom.Treeview", background=[("selected", "#e0e7ff")])
-        style.configure("Custom.TCombobox", padding=4)
+        style.map("Custom.Treeview", 
+                 background=[("selected", self.colors["accent_muted"])],
+                 foreground=[("selected", self.colors["accent"])])
+
+        style.configure("Custom.TCombobox", 
+                       padding=8,
+                       font=("Segoe UI", 10),
+                       fieldbackground=self.colors["white"],
+                       borderwidth=1,
+                       relief="solid")
+
+        style.configure("Modern.TEntry",
+                       padding=8,
+                       font=("Segoe UI", 10),
+                       fieldbackground=self.colors["white"],
+                       borderwidth=1,
+                       relief="solid")
 
     def reset_data(self):
         if not messagebox.askyesno("Confirm Reset", "This will clear all Cost Centers and Production Orders. Continue?"):
-            return
+                return
         self.cost_centers = []
         self.production_orders = []
         self.activity_types = []
@@ -143,7 +206,6 @@ class ProductionCostingSystem:
         self.activity_links = []
         if hasattr(self, "cc_tree") and isinstance(self.cc_tree, ttk.Treeview):
             try:
-                # widget may be destroyed when switching tabs; guard calls
                 if str(self.cc_tree) in self.root.children or True:
                     for item in self.cc_tree.get_children():
                         self.cc_tree.delete(item)
@@ -153,7 +215,7 @@ class ProductionCostingSystem:
 
     def show_tutorial(self, tab_name, steps):
         if self.tutorial_shown.get(tab_name, False):
-            return
+                return
 
         self.tutorial_shown[tab_name] = True
             
@@ -186,10 +248,22 @@ class ProductionCostingSystem:
                         font=("Arial", 14, "bold"), bg=self.colors["white"], 
                         fg=self.colors["text_primary"]).pack(pady=5)
 
-                desc_label = tk.Label(content_frame, text=step["description"], 
-                                    font=("Arial", 11), bg=self.colors["white"], 
-                                    fg=self.colors["text_secondary"], wraplength=450, justify="left")
-                desc_label.pack(pady=10, padx=20)
+                desc = step["description"]
+                if "! IMPORTANT" in desc:
+                    container = tk.Frame(content_frame, bg=self.colors["white"])
+                    container.pack(pady=10, padx=20, anchor="w")
+                    pre, post = desc.split("! IMPORTANT", 1)
+                    tk.Label(container, text=pre, font=("Arial", 11), bg=self.colors["white"], 
+                            fg=self.colors["text_secondary"], wraplength=450, justify="left").pack(side=tk.LEFT, anchor="w")
+                    tk.Label(container, text="! IMPORTANT", font=("Arial", 11, "bold"), bg=self.colors["white"], 
+                            fg="#dc2626").pack(side=tk.LEFT, anchor="w")
+                    tk.Label(container, text=post, font=("Arial", 11), bg=self.colors["white"], 
+                            fg=self.colors["text_secondary"], wraplength=450, justify="left").pack(side=tk.LEFT, anchor="w")
+                else:
+                    desc_label = tk.Label(content_frame, text=desc, 
+                                        font=("Arial", 11), bg=self.colors["white"], 
+                                        fg=self.colors["text_secondary"], wraplength=450, justify="left")
+                    desc_label.pack(pady=10, padx=20)
 
                 btn_frame = tk.Frame(content_frame, bg=self.colors["white"])
                 btn_frame.pack(side=tk.BOTTOM, fill=tk.X, padx=20, pady=10)
@@ -216,21 +290,21 @@ class ProductionCostingSystem:
         content_frame.pack(fill=tk.BOTH, expand=True)
         
         show_step(0)
-        for widget in self.content_frame.winfo_children():
-            widget.destroy()
 
     def show_dashboard(self):
         self.clear_content()
-        tk.Label(self.content_frame, text="Welcome, User!", 
-                 font=("Arial", 20, "bold"), bg=self.colors["white"], fg=self.colors["text_primary"]).pack(pady=16, anchor="w", padx=20)
 
-        dash_panel = tk.Frame(self.content_frame, bg=self.colors["bg_sidebar"], bd=0)
-        dash_panel.pack(fill=tk.X, padx=20, pady=8)
-        cards_holder = tk.Frame(dash_panel, bg=self.colors["white"], bd=1, relief="ridge")
-        cards_holder.pack(fill=tk.X, padx=12, pady=12)
-
-        cards_frame = tk.Frame(cards_holder, bg=self.colors["white"])
-        cards_frame.pack(pady=4, padx=6, fill=tk.X)
+        header_frame = tk.Frame(self.content_frame, bg="#f8fafc", height=100)
+        header_frame.pack(fill=tk.X, padx=24, pady=(24, 16))
+        header_frame.pack_propagate(False)
+        
+        welcome_label = tk.Label(header_frame, text="Welcome to Production Costing System", 
+                                font=("Segoe UI", 24, "bold"), bg="#f8fafc", fg=self.colors["text_primary"])
+        welcome_label.pack(anchor="w", pady=(20, 0))
+        
+        subtitle_label = tk.Label(header_frame, text="Monitor your production costs and profitability in real-time", 
+                                 font=("Segoe UI", 12), bg="#f8fafc", fg=self.colors["text_secondary"])
+        subtitle_label.pack(anchor="w")
 
         total_orders = len(self.production_orders)
         total_planned = sum(order.get("planned_cost", 0.0) for order in self.production_orders)
@@ -247,56 +321,136 @@ class ProductionCostingSystem:
             actual_cost = order.get("actual_cost", 0.0)
             total_profit += (revenue - actual_cost)
 
-        def make_card(parent, title, value, row, col):
-            card = tk.Frame(parent, bg=self.colors["bg_card"], bd=1, relief="ridge", padx=18, pady=12, highlightbackground="#e5e7eb", highlightthickness=1)
-            card.grid(row=row, column=col, padx=12, pady=12, sticky="nsew")
-            tk.Label(card, text=title, font=("Arial", 11, "bold"), bg=self.colors["bg_card"], fg=self.colors["text_secondary"], anchor="w").pack(fill="x", expand=True)
-            tk.Label(card, text=value, font=("Arial", 16, "bold"), bg=self.colors["bg_card"], fg=self.colors["text_primary"], anchor="w").pack(fill="x", expand=True, pady=(6,2))
+        metrics_frame = tk.Frame(self.content_frame, bg="#f8fafc")
+        metrics_frame.pack(fill=tk.X, padx=24, pady=16)
+
+        def create_metric_card(parent, title, value, icon, color, row, col):
+            card = tk.Frame(parent, bg=self.colors["white"], relief=tk.FLAT, bd=0)
+            card.grid(row=row, column=col, padx=8, pady=8, sticky="nsew")
+            card.grid_columnconfigure(0, weight=1)
+
+            shadow_frame = tk.Frame(card, bg="#e2e8f0", height=2)
+            shadow_frame.pack(fill=tk.X, side=tk.BOTTOM)
+
+            content_frame = tk.Frame(card, bg=self.colors["white"])
+            content_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=16)
+            
+            top_frame = tk.Frame(content_frame, bg=self.colors["white"])
+            top_frame.pack(fill=tk.X, pady=(0, 8))
+            
+            icon_label = tk.Label(top_frame, text=icon, font=("Segoe UI", 16), 
+                                 bg=self.colors["white"], fg=color)
+            icon_label.pack(side=tk.LEFT)
+            
+            title_label = tk.Label(top_frame, text=title, font=("Segoe UI", 11, "bold"), 
+                                  bg=self.colors["white"], fg=self.colors["text_secondary"])
+            title_label.pack(side=tk.LEFT, padx=(8, 0))
+
+            value_label = tk.Label(content_frame, text=value, font=("Segoe UI", 20, "bold"), 
+                                  bg=self.colors["white"], fg=color)
+            value_label.pack(anchor="w")
+            
             return card
 
-        make_card(cards_frame, "Total Orders", str(total_orders), row=0, col=0)
-        make_card(cards_frame, "Total Planned Cost", f"₱{total_planned:,.2f}", row=0, col=1)
-        make_card(cards_frame, "Total Actual Cost", f"₱{total_actual:,.2f}", row=1, col=0)
-        make_card(cards_frame, "Cost Variance", f"₱{variance:,.2f}", row=1, col=1)
-        make_card(cards_frame, "Total Profit", f"₱{total_profit:,.2f}", row=2, col=0)
-
+        create_metric_card(metrics_frame, "Total Orders", str(total_orders), "📦", self.colors["accent"], 0, 0)
+        create_metric_card(metrics_frame, "Planned Cost", f"₱{total_planned:,.2f}", "📋", self.colors["warning"], 0, 1)
+        create_metric_card(metrics_frame, "Actual Cost", f"₱{total_actual:,.2f}", "💰", self.colors["danger"], 0, 2)
+        create_metric_card(metrics_frame, "Cost Variance", f"₱{variance:,.2f}", "📊", 
+                          self.colors["success"] if variance <= 0 else self.colors["danger"], 1, 0)
+        create_metric_card(metrics_frame, "Total Profit", f"₱{total_profit:,.2f}", "💎", 
+                          self.colors["success"] if total_profit >= 0 else self.colors["danger"], 1, 1)
+        
         profit_status = "Profitable" if total_profit > 0 else "Loss" if total_profit < 0 else "Break-even"
-        make_card(cards_frame, "Status", profit_status, row=2, col=1)
+        status_color = self.colors["success"] if total_profit > 0 else self.colors["danger"] if total_profit < 0 else self.colors["warning"]
+        create_metric_card(metrics_frame, "Status", profit_status, "📈", status_color, 1, 2)
 
-        cards_frame.grid_columnconfigure(0, weight=1)
-        cards_frame.grid_columnconfigure(1, weight=1)
+        for i in range(3):
+            metrics_frame.grid_columnconfigure(i, weight=1)
+        
         self._unsaved_production = False
         
     def show_cost_center(self):
         self.clear_content()
-        tk.Label(self.content_frame, text="Cost Center", 
-                 font=("Arial", 20, "bold"), bg=self.colors["white"], fg=self.colors["text_primary"]).pack(pady=10, anchor="w", padx=20)
+        try:
+            self.root.grab_release()
+        except Exception:
+            pass
+        try:
+            for child in self.root.winfo_children():
+                if isinstance(child, tk.Toplevel):
+                    try:
+                        child.destroy()
+                    except Exception:
+                        pass
+        except Exception:
+            pass
+        
+        header_frame = tk.Frame(self.content_frame, bg="#f8fafc", height=80)
+        header_frame.pack(fill=tk.X, padx=24, pady=(24, 16))
+        header_frame.pack_propagate(False)
+        
+        title_label = tk.Label(header_frame, text="Cost Centers", 
+                              font=("Segoe UI", 20, "bold"), bg="#f8fafc", fg=self.colors["text_primary"])
+        title_label.pack(anchor="w", pady=(15, 0))
+        
+        subtitle_label = tk.Label(header_frame, text="Manage your production cost centers and work areas", 
+                                 font=("Segoe UI", 12), bg="#f8fafc", fg=self.colors["text_secondary"])
+        subtitle_label.pack(anchor="w")
 
-        cc_panel = tk.Frame(self.content_frame, bg=self.colors["bg_sidebar"], bd=0, relief="flat")
-        cc_panel.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+        main_frame = tk.Frame(self.content_frame, bg="#f8fafc")
+        main_frame.pack(fill=tk.BOTH, expand=True, padx=24, pady=16)
 
-        form_card = tk.Frame(cc_panel, bg=self.colors["white"], bd=1, relief="ridge")
-        form_card.pack(side=tk.LEFT, padx=12, pady=12, anchor="n")
+        form_card = tk.Frame(main_frame, bg=self.colors["white"], relief=tk.FLAT, bd=0)
+        form_card.pack(side=tk.LEFT, padx=(0, 12), pady=0, anchor="n")
+        form_card.configure(width=350)
+        form_card.pack_propagate(True)
+        
+        form_header = tk.Frame(form_card, bg=self.colors["accent"], height=50)
+        form_header.pack(fill=tk.X)
+        form_header.pack_propagate(False)
+        
+        tk.Label(form_header, text="➕ Add New Cost Center", 
+                font=("Segoe UI", 12, "bold"), bg=self.colors["accent"], fg="white").pack(pady=15)
+        
         form = tk.Frame(form_card, bg=self.colors["white"]) 
-        form.pack(padx=12, pady=12)
+        form.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+        form.bind_all('<Escape>', lambda e: id_entry.focus_set())
 
-        tk.Label(form, text="Cost Center ID:", bg=self.colors["white"], fg=self.colors["text_secondary"], font=("Arial", 12)).grid(row=0, column=0, pady=5, sticky="w")
-        id_entry = ttk.Entry(form, width=32)
-        id_entry.grid(row=0, column=1, pady=5, padx=(10,0))
+        tk.Label(form, text="Cost Center ID", bg=self.colors["white"], fg=self.colors["text_primary"], 
+                font=("Segoe UI", 11, "bold")).grid(row=0, column=0, pady=(0, 5), sticky="w")
+        id_entry = ttk.Entry(form, width=35)
+        id_entry.grid(row=1, column=0, pady=(0, 15), sticky="ew")
 
-        tk.Label(form, text="Cost Center Name:", bg=self.colors["white"], fg=self.colors["text_secondary"], font=("Arial", 12)).grid(row=1, column=0, pady=5, sticky="w")
-        name_entry = ttk.Entry(form, width=32)
-        name_entry.grid(row=1, column=1, pady=5, padx=(10,0))
+        tk.Label(form, text="Cost Center Name", bg=self.colors["white"], fg=self.colors["text_primary"], 
+                font=("Segoe UI", 11, "bold")).grid(row=2, column=0, pady=(0, 5), sticky="w")
+        name_entry = ttk.Entry(form, width=35)
+        name_entry.grid(row=3, column=0, pady=(0, 15), sticky="ew")
 
-        tk.Label(form, text="Description (Optional):", bg=self.colors["white"], fg=self.colors["text_secondary"], font=("Arial", 12)).grid(row=2, column=0, pady=5, sticky="w")
-        desc_entry = ttk.Entry(form, width=32)
-        desc_entry.grid(row=2, column=1, pady=5, padx=(10,0))
+        tk.Label(form, text="Description (Optional)", bg=self.colors["white"], fg=self.colors["text_primary"], 
+                font=("Segoe UI", 11, "bold")).grid(row=4, column=0, pady=(0, 5), sticky="w")
+        desc_entry = ttk.Entry(form, width=35)
+        desc_entry.grid(row=5, column=0, pady=(0, 20), sticky="ew")
+
+        try:
+            id_entry.state(["!disabled", "!readonly"])
+            name_entry.state(["!disabled", "!readonly"])
+            desc_entry.state(["!disabled", "!readonly"])
+        except Exception:
+            pass
+        id_entry.configure(takefocus=True)
+        name_entry.configure(takefocus=True)
+        desc_entry.configure(takefocus=True)
+        id_entry.focus_set()
+        id_entry.bind("<Return>", lambda e: name_entry.focus_set())
+        name_entry.bind("<Return>", lambda e: desc_entry.focus_set())
+        desc_entry.bind("<Return>", lambda e: save_cost_center())
+        form.grid_columnconfigure(0, weight=1)
 
         def save_cost_center():
             cost_center_id = id_entry.get().strip()
             cost_center_name = name_entry.get().strip()
             if not cost_center_id or not cost_center_name:
-                messagebox.showerror("Error", "Please fill in all fields!")
+                messagebox.showerror("Error", "Please fill in all required fields!")
                 return
             self.cost_centers.append({
                 "id": cost_center_id,
@@ -309,22 +463,33 @@ class ProductionCostingSystem:
             desc_entry.delete(0, tk.END)
             refresh_cc_table()
 
-        save_btn = tk.Button(form, text="Save", command=save_cost_center, width=10, bg=self.colors["accent"], fg=self.colors["white"], relief=tk.FLAT)
-        save_btn.grid(row=3, column=1, pady=10, sticky="e")
+        save_btn = tk.Button(form, text="💾 Save Cost Center", command=save_cost_center, 
+                            width=25, height=2, bg=self.colors["accent"], fg="white", 
+                            relief=tk.FLAT, font=("Segoe UI", 10, "bold"), takefocus=True)
+        save_btn.grid(row=6, column=0, pady=10, sticky="ew")
 
-        table_card = tk.Frame(cc_panel, bg=self.colors["white"], bd=1, relief="ridge")
-        table_card.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=12, pady=12)
+        table_card = tk.Frame(main_frame, bg=self.colors["white"], relief=tk.FLAT, bd=0)
+        table_card.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(12, 0), pady=0)
+
+        table_header = tk.Frame(table_card, bg=self.colors["accent_muted"], height=50)
+        table_header.pack(fill=tk.X)
+        table_header.pack_propagate(False)
+        
+        tk.Label(table_header, text="📋 Cost Centers List", 
+                font=("Segoe UI", 12, "bold"), bg=self.colors["accent_muted"], 
+                fg=self.colors["text_primary"]).pack(pady=15)
+        
         table_frame = tk.Frame(table_card, bg=self.colors["white"]) 
-        table_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        table_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
 
         columns = ("id", "name", "description")
-        self.cc_tree = ttk.Treeview(table_frame, columns=columns, show="headings", height=10, style="Custom.Treeview")
+        self.cc_tree = ttk.Treeview(table_frame, columns=columns, show="headings", height=12, style="Custom.Treeview")
         self.cc_tree.heading("id", text="ID")
         self.cc_tree.heading("name", text="Name")
         self.cc_tree.heading("description", text="Description")
         self.cc_tree.column("id", width=120, anchor="w")
-        self.cc_tree.column("name", width=220, anchor="w")
-        self.cc_tree.column("description", width=360, anchor="w")
+        self.cc_tree.column("name", width=200, anchor="w")
+        self.cc_tree.column("description", width=300, anchor="w")
         self.cc_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         scrollbar = ttk.Scrollbar(table_frame, orient="vertical", command=self.cc_tree.yview)
@@ -351,8 +516,12 @@ class ProductionCostingSystem:
             },
             {
                 "title": "Step 2: Assign to Work Centers",
-                "description": "Next, link your activity types to specific cost centers with hourly rates. This tells the system how much each type of work costs per hour."
+            "description": "Next, link your activity types to specific cost centers with hourly rates. This tells the system how much each type of work costs per hour. Just press Enter and it will automatically save."
             },
+        {
+            "title": "IMPORTANT",
+            "description": "You may need to maximize the window to see the Assign to Work Center panel."
+        },
             {
                 "title": "Why This Matters",
                 "description": "These rates will be used when calculating planned costs for production orders. Make sure your rates reflect actual labor and machine costs!"
@@ -360,8 +529,18 @@ class ProductionCostingSystem:
         ]
         self.show_tutorial("activity_types", tutorial_steps)
         self.clear_content()
-        tk.Label(self.content_frame, text="Activity Type", 
-                 font=("Arial", 20, "bold"), bg=self.colors["white"], fg=self.colors["text_primary"]).pack(pady=10, anchor="w", padx=20)
+
+        header_frame = tk.Frame(self.content_frame, bg="#f8fafc", height=80)
+        header_frame.pack(fill=tk.X, padx=24, pady=(24, 16))
+        header_frame.pack_propagate(False)
+        
+        title_label = tk.Label(header_frame, text="Activity Types", 
+                              font=("Segoe UI", 20, "bold"), bg="#f8fafc", fg=self.colors["text_primary"])
+        title_label.pack(anchor="w", pady=(15, 0))
+        
+        subtitle_label = tk.Label(header_frame, text="Define work activities and assign them to cost centers with rates", 
+                                 font=("Segoe UI", 12), bg="#f8fafc", fg=self.colors["text_secondary"])
+        subtitle_label.pack(anchor="w")
 
         info_panel = tk.Frame(self.content_frame, bg=self.colors["bg_sidebar"], bd=0)
         info_panel.pack(fill=tk.X, padx=20, pady=(0,10))
@@ -437,8 +616,7 @@ class ProductionCostingSystem:
         
         tk.Label(assign_form, text="Work Center (Cost Center):", bg=self.colors["white"], fg=self.colors["text_secondary"], font=("Arial", 12)).grid(row=1, column=0, pady=5, sticky="w")
         wc_var = tk.StringVar()
-        wc_values = [cc.get("id", "") for cc in self.cost_centers]
-        wc_combo = ttk.Combobox(assign_form, textvariable=wc_var, width=27, values=wc_values, state="readonly")
+        wc_combo = ttk.Combobox(assign_form, textvariable=wc_var, width=27, state="readonly")
         wc_combo.grid(row=1, column=1, pady=5, padx=(10,0))
 
         tk.Label(assign_form, text="Activity Type:", bg=self.colors["white"], fg=self.colors["text_secondary"], font=("Arial", 12)).grid(row=2, column=0, pady=5, sticky="w")
@@ -453,6 +631,16 @@ class ProductionCostingSystem:
         def refresh_assignment_combo():
             activity_names = [activity["name"] for activity in self.activity_types]
             atype_combo['values'] = activity_names
+
+        def refresh_work_centers_combo():
+            wc_values_now = [cc.get("id", "") for cc in self.cost_centers]
+            wc_combo['values'] = wc_values_now
+
+        def refresh_activity_table():
+            for item in self.activity_tree.get_children():
+                self.activity_tree.delete(item)
+            for link in self.activity_links:
+                self.activity_tree.insert("", tk.END, values=(link.get("work_center_id"), link.get("activity_type"), f"₱{link.get('rate', 0):,.2f} per hour"))
 
         def save_link():
             wc = wc_var.get().strip()
@@ -475,8 +663,13 @@ class ProductionCostingSystem:
             atype_var.set("")
             rate_entry.delete(0, tk.END)
             refresh_activity_table()
+            messagebox.showinfo("Success", "Assignment saved.")
 
-        tk.Button(assign_form, text="Assign", command=save_link, width=10, bg=self.colors["accent"], fg=self.colors["white"], relief=tk.FLAT).grid(row=4, column=1, pady=10, sticky="e")
+        assign_btn = tk.Button(assign_form, text="Save Assignment", command=save_link, bg=self.colors["accent"], fg=self.colors["white"], relief=tk.FLAT)
+        assign_btn.grid(row=4, column=0, columnspan=2, pady=10, sticky="ew")
+        assign_form.grid_columnconfigure(0, weight=1)
+        assign_form.grid_columnconfigure(1, weight=1)
+        rate_entry.bind("<Return>", lambda e: save_link())
 
         right_card = tk.Frame(panel, bg=self.colors["white"], bd=1, relief="ridge")
         right_card.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=12, pady=12)
@@ -505,15 +698,10 @@ class ProductionCostingSystem:
             for activity in self.activity_types:
                 self.activity_types_tree.insert("", tk.END, values=(activity.get("name"), activity.get("description", "")))
 
-        def refresh_activity_table():
-            for item in self.activity_tree.get_children():
-                self.activity_tree.delete(item)
-            for link in self.activity_links:
-                self.activity_tree.insert("", tk.END, values=(link.get("work_center_id"), link.get("activity_type"), f"₱{link.get('rate', 0):,.2f} per hour"))
-
         refresh_activity_types_table()
         refresh_activity_table()
         refresh_assignment_combo()
+        refresh_work_centers_combo()
 
     def show_sales_data(self):
         tutorial_steps = [
@@ -522,7 +710,7 @@ class ProductionCostingSystem:
                 "description": "Enter selling prices and quantities sold for your production orders. This data is used to calculate revenue and profitability."
             },
             {
-                "title": "Adding Sales Information",
+                "title": "Adding Sales Information", 
                 "description": "Select a production order, enter the selling price per unit, and quantity sold. The system calculates total revenue automatically."
             },
             {
@@ -594,7 +782,7 @@ class ProductionCostingSystem:
             price_entry.delete(0, tk.END)
             qty_entry.delete(0, tk.END)
             refresh_sales_table()
-        
+
         tutorial_steps = [
             {
                 "title": "Welcome to Sales Data!",
@@ -689,7 +877,7 @@ class ProductionCostingSystem:
         summary_panel.pack(fill=tk.X, padx=20, pady=(0,10))
         summary_card = tk.Frame(summary_panel, bg=self.colors["white"], bd=1, relief="ridge")
         summary_card.pack(fill=tk.X, padx=12, pady=12)
-        
+
         total_revenue = 0.0
         total_cost = 0.0
         total_profit = 0.0
@@ -1123,7 +1311,7 @@ class ProductionCostingSystem:
                 }
             ]
             self.root.after(100, lambda: self.show_tutorial("actual_cost", tutorial_steps))
-    
+
     def show_reports(self):
         tutorial_steps = [
             {
@@ -1219,7 +1407,7 @@ class ProductionCostingSystem:
 
         order_combo.bind("<<ComboboxSelected>>", lambda e: refresh_table())
         refresh_table()
-        
+
         tutorial_steps = [
             {
                 "title": "Welcome to Reports!",
